@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        
+        <!--JQuery-->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+
+            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+                integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <!--amcharts-->
+        <script src="//cdn.amcharts.com/lib/4/core.js"></script>
+        <script src="//cdn.amcharts.com/lib/4/charts.js"></script>
+        <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
+
+        <title>RSAC_dashboard</title>
+    </head>
+
+    <body>
+                                                            <!--static part start-->
+        <nav class="navbar navbar-expand-lg navbar-dark navbar-dark bg-dark">
+            <h1 style="color: #ffffff" >RSAC Census Dashboard</h1>
+        
+        <div class="navbar color3 mx-auto">
+            <select class="mx-auto" id="drop-down-states" onchange="stateChange(this);">
+                <option value="overview" selected>Overview</option>
+                {% for result in states%}
+                    <option value='{{result}}'>{{result}}</option>
+                {% endfor %}
+            </select>
+            <br>
+        </div>
+        </nav>
+                                                            <!--static part end-->
+        
+        <div class="alert alert-dark">
+        <h3>Overview stats:</h3>
+            <div>
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Total Population
+                        <span class="badge badge-primary badge-pill" id="total_population">{{population}}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Total Literates
+                        <span class="badge badge-primary badge-pill" id="total_literates">{{literates}}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Literacy Rate
+                        <span class="badge badge-primary badge-pill" id="total_literacy_rate">{{literacy_rate}}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Number of locations' data in the database
+                        <span class="badge badge-primary badge-pill" id="total_location">{{no_of_states}}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="container">
+            <h3>Information Breakdown:</h3>
+            <div class="row">
+                
+                <div class='col' >
+                    <div id="horizontal-bar-chart-states" style="width: 100%;"></div>
+                </div>
+                <div class='col'>
+                    <div id="pie-chart" style="width: 85%; height: 600px;"></div>
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class='col'>
+                    <div id="nested_pie_chart" style="width: 100%; height: 400px;"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <script>
+           
+                am4core.useTheme(am4themes_animated);
+                var chart01 = am4core.create("horizontal-bar-chart-states", am4charts.XYChart);
+                chart01.data = {{ state_data|safe }};
+                var title = chart01.titles.create();
+                title.text = "Population";
+                title.fontSize = 20;
+
+                var cellSize = 20;
+                chart01.events.on("datavalidated", function (ev) {
+                        // Get objects of interest
+                        var chart = ev.target;
+                        var categoryAxis = chart.yAxes.getIndex(0);
+                        // Calculate how we need to adjust chart height
+                        var adjustHeight = chart.data.length * cellSize - categoryAxis.pixelHeight;
+                        // get current chart height
+                        var targetHeight = chart.pixelHeight + adjustHeight;
+                        // Set it on chart's container
+                        chart.svgContainer.htmlElement.style.height = targetHeight + "px";
+                    });
+                
+                // Create axes
+                var categoryAxis = chart01.yAxes.push(new am4charts.CategoryAxis());
+                categoryAxis.dataFields.category = "location";
+                categoryAxis.renderer.grid.template.opacity = 0;
+                categoryAxis.renderer.labels.template.disabled = true;
+                categoryAxis.renderer.minGridDistance = 300;
+                
+                var valueAxis = chart01.xAxes.push(new am4charts.ValueAxis());
+                valueAxis.renderer.labels.template.disabled = true;
+                valueAxis.renderer.grid.template.opacity = 0;
+                
+                // Create series
+                function createSeries01(name) {
+                    var series = chart01.series.push(new am4charts.ColumnSeries());
+                    series.dataFields.valueX = "population_male";
+                    series.dataFields.categoryY = "location";
+                    series.stacked = true;
+                    series.name = name;
+                    series.columns.template.tooltipText = "{categoryY}: {name} ({valueX.value})";
+
+                }
+
+                function createSeries02(name) {
+                        var series = chart01.series.push(new am4charts.ColumnSeries());
+                        series.dataFields.valueX = "population_female";
+                        series.dataFields.categoryY = "location";
+                        series.stacked = true;
+                        series.name = name;
+                        series.columns.template.tooltipText = "{categoryY}: {name} ({valueX.value})";
+                    }
+
+                createSeries01("MALE");
+                createSeries02("FEMALE");
+                    
+                
+                am4core.useTheme(am4themes_animated);
+                var pie_chart=am4core.create("pie-chart",am4charts.PieChart3D);
+                pie_chart.hiddenState.properties.opacity = 0; 
+                var title = pie_chart.titles.create();
+                title.text = "Literates";
+                title.fontSize = 20;
+
+                pie_chart.data={{literate_total_data|safe}};
+                pie_chart.innerRadius = am4core.percent(40);
+                pie_chart.depth = 120;
+
+                // Add and configure Series
+                var pieSeries = pie_chart.series.push(new am4charts.PieSeries3D());
+                pieSeries.dataFields.value = "population";
+                pieSeries.dataFields.depthValue = "population";
+                pieSeries.dataFields.category = "location"; 
+                pieSeries.slices.template.cornerRadius = 5;
+                pieSeries.colors.step = 3;
+                // Disable ticks and labels
+                pieSeries.labels.template.disabled = true;
+                pieSeries.ticks.template.disabled = true;
+                    
+                
+                am4core.useTheme(am4themes_animated);
+                var chart02 = am4core.create("nested_pie_chart", am4charts.PieChart);
+                chart02.innerRadius = am4core.percent(40);
+                // Add data
+                chart02.data ={{state_lr|safe}} ;
+                var title = chart02.titles.create();
+                title.text = "Literacy Rates";
+                title.fontSize = 20;
+
+                // Add and configure Series
+                var pieSeries = chart02.series.push(new am4charts.PieSeries());
+                pieSeries.dataFields.value = "male";
+                pieSeries.dataFields.category = "state";
+                pieSeries.slices.template.stroke = am4core.color("#fff");
+                pieSeries.slices.template.strokeWidth = 2;
+                pieSeries.slices.template.strokeOpacity = 1;
+
+                // Disabling labels and ticks on inner circle
+                pieSeries.labels.template.disabled = true;
+
+                // Disable sliding out of slices
+                pieSeries.slices.template.states.getKey("hover").properties.shiftRadius = 0;
+                pieSeries.slices.template.states.getKey("hover").properties.scale = 0.9;
+
+                // Add second series
+                var pieSeries2 = chart02.series.push(new am4charts.PieSeries());
+                pieSeries2.dataFields.value = "female";
+                pieSeries2.dataFields.category = "state";
+                pieSeries2.slices.template.stroke = am4core.color("#fff");
+                pieSeries2.slices.template.strokeWidth = 2;
+                pieSeries2.slices.template.strokeOpacity = 1;
+                pieSeries2.slices.template.states.getKey("hover").properties.shiftRadius = 0;
+                pieSeries2.slices.template.states.getKey("hover").properties.scale = 1.1;
+
+                pieSeries.slices.template.tooltipText = "Male: {category}: {value}";
+                pieSeries2.slices.template.tooltipText = "Female: {category}: {value}";
+                // Disabling labels and ticks on inner circle
+                pieSeries2.labels.template.disabled = true;
+            
+            function stateChange(selectObj){
+                var idx=selectObj.selectedIndex;
+                var option=selectObj.options[idx].value;
+                $.ajax({
+                    type:"GET",
+                    url: "select_page",
+                    data:{
+                        'value':option,
+                        'index':idx
+                    },
+                    dataType: 'json',
+                    success:  function(result){
+                        document.getElementById("total_population").innerHTML = result['population'];
+                        document.getElementById("total_literates").innerHTML = result['literates'];
+                        document.getElementById("total_literacy_rate").innerHTML = result['literacy_rate'];
+                        document.getElementById("total_location").innerHTML = result['no_of_states'];
+                        
+                        chart01.data=result['state_data'];
+                        pie_chart.data = result['literate_total_data'] ;
+                        chart02.data = result['state_lr'] ;
+                    }
+                });
+            }
+        </script>
+    </body>
+</html>
