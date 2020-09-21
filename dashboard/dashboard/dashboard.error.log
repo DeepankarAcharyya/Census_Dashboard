@@ -1,0 +1,15 @@
+The 'Apache2.4' service is restarting.
+The 'Apache2.4' service has restarted.
+winnt:notice] [pid 10696:tid 828] AH00455: Apache/2.4.46 (Win64) mod_wsgi/4.7.1 Python/3.7 configured -- resuming normal operations
+[Mon Sep 21 18:47:18.696467 2020] [mpm_winnt:notice] [pid 10696:tid 828] AH00456: Apache Lounge VS16 Server built: Aug  2 2020 10:21:32
+[Mon Sep 21 18:47:18.696467 2020] [core:notice] [pid 10696:tid 828] AH00094: Command line: 'C:\\apache24\\Apache24\\bin\\httpd.exe -d C:/apache24/Apache24'
+[Mon Sep 21 18:47:18.708464 2020] [mpm_winnt:notice] [pid 10696:tid 828] AH00418: Parent: Created child process 6308
+[Mon Sep 21 18:47:19.822363 2020] [mpm_winnt:notice] [pid 6308:tid 560] AH00354: Child: Starting 64 worker threads.
+[Mon Sep 21 18:48:50.199315 2020] [mpm_winnt:notice] [pid 10696:tid 828] AH00422: Parent: Received shutdown signal -- Shutting down the server.
+[Mon Sep 21 18:48:52.204119 2020] [mpm_winnt:notice] [pid 6308:tid 560] AH00364: Child: All worker threads have exited.
+[Mon Sep 21 18:48:52.299971 2020] [mpm_winnt:notice] [pid 10696:tid 828] AH00430: Parent: Child process 6308 exited successfully.
+[Mon Sep 21 18:51:33.056357 2020] [wsgi:error] [pid 11768:tid 1196] [client ::1:51803] <QueryDict: {'value': ['ANDHRA PRADESH'], 'index': ['4']}>\r, referer: http://localhost/
+[Mon Sep 21 18:51:37.384443 2020] [wsgi:error] [pid 11768:tid 1196] [client ::1:51803] <QueryDict: {'value': ['CHANDIGARH'], 'index': ['10']}>\r, referer: http://localhost/
+[Mon Sep 21 18:52:36.096477 2020] [wsgi:error] [pid 11768:tid 1196] [client ::1:51812] <QueryDict: {'value': ['NCT OF DELHI'], 'index': ['11']}>\r, referer: http://localhost/
+[Mon Sep 21 19:26:59.288972 2020] [wsgi:error] [pid 11768:tid 1196] [client ::1:51913] <QueryDict: {'value': ['CHANDIGARH'], 'index': ['10']}>\r, referer: http://localhost/
+[Mon Sep 21 19:27:07.472829 2020] [wsgi:error] [pid 11768:tid 1196] [client ::1:51916] <QueryDict: {'value': ['MAHARASHTRA'], 'index': ['14']}>\r, referer: http://localhost/

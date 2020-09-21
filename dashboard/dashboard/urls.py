@@ -18,5 +18,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('board/', include('board.urls')), #the URLs from the board app can be accessed but only if they are prefixed by board.
+    path('', include('board.urls')),
 ]
